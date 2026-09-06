@@ -1,10 +1,10 @@
-# RootFinder 🤖
+# RootFinder
 
 **AI-powered customer review analysis bot for Telegram.** Upload a `.csv` or `.xlsx` of customer reviews, and RootFinder turns them into a tagged, localized action report.
 
 A **personal portfolio project** built with [n8n](https://n8n.io).
 
-## Try it live 🤖
+## Try it live
 
 Message [**@raytestmodel3bot**](https://t.me/raytestmodel3bot) on Telegram and upload a `.csv` or `.xlsx` of customer reviews — it will reply with the analysis report.
 
