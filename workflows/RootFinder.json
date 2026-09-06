@@ -1,0 +1,1478 @@
+{
+  "name": "RootFinder",
+  "nodes": [
+    {
+      "parameters": {
+        "batchSize": 35,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        3248,
+        208
+      ],
+      "id": "6f514634-3056-4708-ae7b-64278306fc41",
+      "name": "Batch Negatives for Root Cause"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {
+          "includeBinaries": false
+        }
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        2224,
+        224
+      ],
+      "id": "08221a3e-492b-49cd-9a89-a74b870003b0",
+      "name": "Rejoin Corrected Batches"
+    },
+    {
+      "parameters": {
+        "batchSize": 50,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        2000,
+        304
+      ],
+      "id": "39c9d661-f599-4ec0-bc90-663792b3948b",
+      "name": "Batch Mismatches for Correction"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "parsed_text",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        2512,
+        -64
+      ],
+      "id": "a5300d21-58a5-44ac-beee-f00f3d6f114f",
+      "name": "Split Corrected Sentiments"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "parsed_text",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        3760,
+        -16
+      ],
+      "id": "c20f13de-2325-4df2-9868-46d644db0c17",
+      "name": "Split Root Cause Results"
+    },
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "options": {
+          "fileName": "Analysis_Result.xlsx"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        4048,
+        -16
+      ],
+      "id": "8e5f7ae4-1678-42c0-af1b-631c56d0daa3",
+      "name": "Export Analysis to XLSX"
+    },
+    {
+      "parameters": {
+        "compare": "selectedFields",
+        "fieldsToCompare": "ReviewId",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        1552,
+        368
+      ],
+      "id": "bb863327-4de8-49bb-8228-fa66b8f69bb7",
+      "name": "Deduplicate Reviews"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {
+          "download": true
+        }
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        -1488,
+        176
+      ],
+      "id": "ba861d13-5b72-4ff3-997a-a8afed770f06",
+      "name": "Telegram Message Received",
+      "webhookId": "",
+      "credentials": {
+        "telegramApi": {
+          "id": "",
+          "name": "RootFinder"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendDocument",
+        "chatId": "={{ $('Telegram Message Received').item.json.message.chat.id }}",
+        "binaryData": true,
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        4272,
+        -16
+      ],
+      "id": "f53d9486-fcac-4c48-8caa-2b3dbd8ec3c2",
+      "name": "Send Analysis Report",
+      "webhookId": "",
+      "credentials": {
+        "telegramApi": {
+          "id": "",
+          "name": "RootFinder"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-3.5-flash-lite",
+          "mode": "list",
+          "cachedResultName": "models/gemini-3.5-flash-lite"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are an automated sentiment correction model. Your ONLY job is to resolve discrepancies between customer review texts, star ratings, and preliminary AI sentiment predictions for a BATCH of customer reviews.\n\nFor each review in the input list, determine the ACTUAL sentiment of the review text. Pay close attention to sarcasm, irony, local slang, or user mistakes (e.g., writing a glowing review but accidentally leaving 1 star, or leaving 5 stars but writing a harsh complaint).\n\nOutput STRICTLY as a JSON array. Do not include conversational text, apologies, or markdown outside of the JSON block.\n\nJSON Schema:\n[\n  {\n    \"original_index\": \"The index or ID of the review provided in the prompt\",\n    \"corrected_sentiment\": \"Positive | Negative | Neutral\",\n    \"reasoning\": \"1 short sentence explaining why you chose this sentiment (e.g., 'Customer was being sarcastic' or 'User misclicked star rating').\"\n  }\n]"
+            },
+            {
+              "content": "=Analyze and correct the sentiment for the following batch of reviews:\n\n{{ JSON.stringify($json) }}"
+            },
+            {}
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        2448,
+        304
+      ],
+      "id": "754f75ac-f945-402a-b3c9-9762f5d6eaa4",
+      "name": "Correct Sentiment with Gemini",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "googlePalmApi": {
+          "id": "",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://nlp-sentiment-model:8000/predict",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "inputs",
+              "value": "={{ $json.ReviewTextOriginal }}"
+            },
+            {
+              "name": "Id",
+              "value": "={{ $json.OrganizationId }}"
+            }
+          ]
+        },
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 20,
+              "batchInterval": 2000
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        880,
+        304
+      ],
+      "id": "db433981-e542-49fd-9e5b-6aa61bcd9f69",
+      "name": "Predict Sentiment Local API",
+      "executeOnce": false,
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-3.5-flash-lite",
+          "mode": "list",
+          "cachedResultName": "models/gemini-3.5-flash-lite"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are an automated customer experience analyzer. Your job is to extract the core complaint from a batched list of negative or false-positive reviews. \nOutput your analysis STRICTLY as a JSON array. Do not include conversational text, apologies, or markdown formatting outside of the JSON block.\n\nRules for \"tags\":\nYou must select 3 tags from this exact list. fill with null if less than 3 tags. DO NOT invent new tags:\n[Pricing, Beverage_Quality, Food_Quality, Ambiance, Cleanliness, Service_Speed, Staff_Attitude, Facilities, Policy, Hygiene]\n\nJSON Schema:\n[\n  {\n    \"original_index\": \"The index or ID of the review provided in the prompt\",\n    \"tags\": [\"Tag1\", \"Tag2\"],\n    \"root_problem\": \"1-2 short sentences summarizing the exact complaint.\",\n    \"recommendation\": \"1 short sentence suggesting how the business can fix it.\"\n  }\n]"
+            },
+            {
+              "content": "=Analyze the following batch of customer reviews:\n\n{{ JSON.stringify($json) }}"
+            },
+            {
+              "content": "CRITICAL LANGUAGE INSTRUCTION:\n1. Detect the original language of each individual review.\n2. ALL generated values (including 'tags', 'root_problem', and 'recommendation') MUST be written in the exact same language as the original review text. \n3. For the 'tags' array, select up to 3 concepts from your standard list (Pricing, Food Quality, Service Speed, etc.) but TRANSLATE those tags into the detected language (e.g., if the review is in Indonesian, output tags like \"Harga\", \"Kualitas Makanan\", or \"Kecepatan Pelayanan\").\n4. The structural JSON keys (\"original_index\", \"tags\", \"root_problem\", \"recommendation\") MUST remain strictly in English."
+            }
+          ]
+        },
+        "simplify": false,
+        "jsonOutput": true,
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        3696,
+        272
+      ],
+      "id": "02a038ca-14af-4bb7-a998-9d3c128b1917",
+      "name": "Detect Root Cause with Gemini",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        3472,
+        176
+      ],
+      "id": "5aced10e-acde-4fbd-ab3f-60e54df7fe4b",
+      "name": "Rejoin Root Cause Batches"
+    },
+    {
+      "parameters": {
+        "maxItems": 250
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        -144,
+        384
+      ],
+      "id": "5d6be74d-3763-4e15-8df4-2ded9c1df031",
+      "name": "Limit to 250 Rows"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Get the text map from Gemini (which is directly connected to this node)\nconst geminiRaw = $input.all()[0].json.content.parts[0].text;\n\n// Clean it up (removes markdown formatting if Gemini added it) and parse it into an object\nconst map = JSON.parse(geminiRaw.replace(/```json|```/g, '').trim());\n\n// 2. REACH BACK and grab the 50+ rows from your Extraction node!\n// ⚠️ IMPORTANT: If your extract node has a different name, change it here:\nconst allData = $items(\"Parse XLSX Upload\"); \n\nlet result = [];\n\n// 3. Loop through all original rows\nfor (let i = 0; i < allData.length; i++) {\n  let item = allData[i].json;\n  \n  // Standardize the columns based on what Gemini figured out\n  item.ReviewTextOriginal = item[map.text_column];\n  item.ReviewRateStars = Number(item[map.rating_column]);\n  \n  // If they provided an ID, use it. If not, invent one!\n  item.ReviewId = map.id_column ? item[map.id_column] : `auto_gen_${i}`;\n  \n  result.push({ json: item });\n}\n\n// 4. Output the full list of standardized rows\nreturn result;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        656,
+        368
+      ],
+      "id": "88019559-73b2-4ec0-8f91-9c7c8758df57",
+      "name": "Standardize Columns"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "b7fa7a7c-9a72-4336-9ce9-f45958735f16",
+              "leftValue": "={{ $json.content.parts[0].text }}",
+              "rightValue": "\"is_valid\": true",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        432,
+        464
+      ],
+      "id": "3ac553fc-c6aa-4cea-9d25-cf3222d64860",
+      "name": "Verify Column Mapping"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -592,
+        480
+      ],
+      "id": "dbf0a4e5-cc52-431c-8f4d-71c43b13d33a",
+      "name": "Merge Upload Branches"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-3.1-flash-lite",
+          "mode": "list",
+          "cachedResultName": "models/gemini-3.1-flash-lite"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=I have a dataset with the following columns: {{ Object.keys($json) }}.\nWhich column represents the customer's text review, which represents the numerical star rating, and which represents a unique ID (if any)?\n\nCRITICAL RULES:\n- If you cannot confidently find a column for the text review OR a column for the star rating, you MUST set \"is_valid\" to false.\n- If both required columns exist, set \"is_valid\" to true.\n- If the ID column is missing, set \"id_column\" to null.\n\nOutput ONLY a JSON object like this:\n{\n  \"text_column\": \"their_column_name_or_null\",\n  \"rating_column\": \"their_column_name_or_null\",\n  \"id_column\": \"their_column_name_or_null\",\n  \"is_valid\": true_or_false\n}"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        80,
+        464
+      ],
+      "id": "8747f5fc-e325-4f78-b626-2e22dcaaff8b",
+      "name": "Detect Columns with Gemini",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "/start",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "be41c5ab-5b7f-4bb9-8aef-e8c3aaebad96"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Start"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "ff7e4826-939e-4cd0-b1d2-1a5b872294ac",
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "/sample",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Sample"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -1264,
+        160
+      ],
+      "id": "14353355-0164-4fc6-b1de-50a92da76199",
+      "name": "Route Commands"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message.document.file_name }}",
+                    "rightValue": "xlsx",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "a462297e-be03-4b04-ad2d-bd8fd474ad08"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "1bd328a9-f2ba-482d-a5c8-a577f0a5bd93",
+                    "leftValue": "={{ $json.message.document.file_name }}",
+                    "rightValue": "csv",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -1040,
+        544
+      ],
+      "id": "89ec394b-be60-4af5-badf-5a2b4fb5002a",
+      "name": "Validate File Extension"
+    },
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "binaryPropertyName": "=data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -816,
+        384
+      ],
+      "id": "9b17bced-e392-4cfe-b261-37df6fa04da0",
+      "name": "Parse XLSX Upload"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -816,
+        576
+      ],
+      "id": "86d0b510-45a5-4183-a8cf-68a027bf8ddf",
+      "name": "Parse CSV Upload"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Message Received').item.json.message.chat.id }}",
+        "text": "⚠️ Error: Hanya Menerima CSV dan XLSX",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -816,
+        768
+      ],
+      "id": "da0e517f-4312-4049-b965-24f667c5d6da",
+      "name": "Send Unsupported File Error",
+      "webhookId": "",
+      "credentials": {
+        "telegramApi": {
+          "id": "",
+          "name": "RootFinder"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "4021eed0-df75-4e7e-9374-e058ab993f4e",
+              "leftValue": "={{ $input.all().length }}",
+              "rightValue": 250,
+              "operator": {
+                "type": "number",
+                "operation": "lte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -368,
+        480
+      ],
+      "id": "50e1aa32-b9a0-4951-bdab-392dae5302e2",
+      "name": "Validate Row Count"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Message Received').item.json.message.chat.id }}",
+        "text": "Processing file, please wait",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        144,
+        272
+      ],
+      "id": "5d813ba2-3221-497b-993e-887ed2d102cd",
+      "name": "Send Processing Notice",
+      "webhookId": "",
+      "executeOnce": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "",
+          "name": "RootFinder"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Message Received').item.json.message.chat.id }}",
+        "text": "=👋 Welcome to RootFinder!\n\nI am an automated data engineering pipeline designed to turn messy customer feedback into actionable business insights.\n\nHow it works:\nSimply upload a .csv or .xlsx file containing customer reviews. My AI will automatically detect your columns, analyze the sentiment, extract the root causes, and return a clean, localized action-item report!\n\n🛠 Available Commands:\n/sample — Get a test dataset and a finished report to see me in action.\n/start — Show this welcome message.\n\n⚠️ System Limits:\n• Please limit uploads to a maximum of 250 rows per file to ensure optimal processing speed.\n\n🔒 Privacy Notice:\nAll files are processed securely in-memory for immediate analysis and are never permanently stored on our servers.",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -1040,
+        -16
+      ],
+      "id": "11d917b3-4daf-47f5-affa-e23dc7273c35",
+      "name": "Send Welcome",
+      "webhookId": "",
+      "executeOnce": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "",
+          "name": "RootFinder"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Message Received').item.json.message.chat.id }}",
+        "text": "=Here are the sample file, check it out",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -1040,
+        176
+      ],
+      "id": "7eac1726-585d-4762-bb07-fbb64ab5216d",
+      "name": "Send Sample Intro",
+      "webhookId": "",
+      "executeOnce": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "",
+          "name": "RootFinder"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendDocument",
+        "chatId": "={{ $('Telegram Message Received').item.json.message.chat.id }}",
+        "file": "",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -816,
+        176
+      ],
+      "id": "ca944aa0-f62d-4a71-bc1c-55bc91a01069",
+      "name": "Send Sample Dataset",
+      "webhookId": "",
+      "executeOnce": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "",
+          "name": "RootFinder"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendDocument",
+        "chatId": "={{ $('Telegram Message Received').item.json.message.chat.id }}",
+        "file": "",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -592,
+        176
+      ],
+      "id": "dc414783-61db-4376-b6ae-fe9eb7b9a3a9",
+      "name": "Send Sample Report",
+      "webhookId": "",
+      "executeOnce": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "",
+          "name": "RootFinder"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Message Received').item.json.message.chat.id }}",
+        "text": "⚠️ Error: Please make sure the amount of review is no more than 250",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -144,
+        576
+      ],
+      "id": "4fdf37ee-cb1a-42b5-a244-4afc14522fe2",
+      "name": "Send Row Limit Error",
+      "webhookId": "",
+      "executeOnce": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "",
+          "name": "RootFinder"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Message Received').item.json.message.chat.id }}",
+        "text": "⚠️ Error:  Please make sure there is review and star column in your file",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        656,
+        560
+      ],
+      "id": "c57d1fbc-2b48-4823-879f-e333d3893a82",
+      "name": "Send Missing Columns Error",
+      "webhookId": "",
+      "executeOnce": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "",
+          "name": "RootFinder"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "07c9b26d-e9af-46ac-bc5a-5342ab4df8b2",
+              "name": "=Sentiment",
+              "value": "={{ $json['0'].label }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1104,
+        304
+      ],
+      "id": "08849ee5-e41c-46d6-9d8f-a35e62031bb7",
+      "name": "Read Sentiment Label"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1328,
+        368
+      ],
+      "id": "eef0b04f-8a3a-419f-a6fe-6958f0f31d64",
+      "name": "Attach Sentiment to Rows"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.Sentiment  === 'Positive' && Number($json.ReviewRateStars) <= 3 }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    },
+                    "id": "f335b59f-3c19-4b4d-b039-2cbdd7ffa5e4"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "False Positive"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "f232a85f-6d83-4947-a169-298d603675d8",
+                    "leftValue": "={{ $json.Sentiment  === 'Negative' && Number($json.ReviewRateStars) >= 4 }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "False Negative"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "877f9dc6-030d-4f69-8613-b3d1c9938078",
+                    "leftValue": "={{ $json.Sentiment  === 'Positive' && Number($json.ReviewRateStars) >= 3 }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "True Positive"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "2b248d0a-89a9-408d-b3d6-551a72b03d4d",
+                    "leftValue": "={{ $json.Sentiment  === 'Negative' && Number($json.ReviewRateStars) <= 4 }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "True Negative"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        1776,
+        336
+      ],
+      "id": "0491acab-f919-4bb8-ae41-cfdfb62792dd",
+      "name": "Flag Star Sentiment Mismatch"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "992a0be6-f535-4441-86f9-06c3cdcb00f3",
+              "name": "parsed_text",
+              "value": "={{ JSON.parse($json.content.parts[0].text) }}",
+              "type": "array"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2224,
+        -64
+      ],
+      "id": "46ace91c-6119-4859-a605-213639f1663a",
+      "name": "Parse Correction Output"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.corrected_sentiment }}",
+                    "rightValue": "Negative",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "dd54e21c-0f20-44e3-8480-779c5c6f4e13"
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        2800,
+        -64
+      ],
+      "id": "d8264353-8a43-4f11-9872-646fddb8b249",
+      "name": "Keep Corrected Negatives"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        3024,
+        208
+      ],
+      "id": "af5048fa-8173-46c7-b9b1-1f2b1de638b9",
+      "name": "Merge Negative Streams"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "992a0be6-f535-4441-86f9-06c3cdcb00f3",
+              "name": "parsed_text",
+              "value": "={{ $json.candidates[0].content.parts[0].text }}",
+              "type": "array"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3472,
+        -16
+      ],
+      "id": "cfe8ebfa-2eb9-40ae-91a9-f7eca7ba625c",
+      "name": "Parse Root Cause Output"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Batch Negatives for Root Cause": {
+      "main": [
+        [
+          {
+            "node": "Parse Root Cause Output",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Rejoin Root Cause Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rejoin Corrected Batches": {
+      "main": [
+        [
+          {
+            "node": "Correct Sentiment with Gemini",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Batch Mismatches for Correction": {
+      "main": [
+        [
+          {
+            "node": "Parse Correction Output",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Rejoin Corrected Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Corrected Sentiments": {
+      "main": [
+        [
+          {
+            "node": "Keep Corrected Negatives",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Root Cause Results": {
+      "main": [
+        [
+          {
+            "node": "Export Analysis to XLSX",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Deduplicate Reviews": {
+      "main": [
+        [
+          {
+            "node": "Flag Star Sentiment Mismatch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Message Received": {
+      "main": [
+        [
+          {
+            "node": "Route Commands",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Export Analysis to XLSX": {
+      "main": [
+        [
+          {
+            "node": "Send Analysis Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Correct Sentiment with Gemini": {
+      "main": [
+        [
+          {
+            "node": "Batch Mismatches for Correction",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Predict Sentiment Local API": {
+      "main": [
+        [
+          {
+            "node": "Read Sentiment Label",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Detect Root Cause with Gemini": {
+      "main": [
+        [
+          {
+            "node": "Batch Negatives for Root Cause",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rejoin Root Cause Batches": {
+      "main": [
+        [
+          {
+            "node": "Detect Root Cause with Gemini",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit to 250 Rows": {
+      "main": [
+        [
+          {
+            "node": "Send Processing Notice",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Detect Columns with Gemini",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Standardize Columns": {
+      "main": [
+        [
+          {
+            "node": "Predict Sentiment Local API",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Attach Sentiment to Rows",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Upload Branches": {
+      "main": [
+        [
+          {
+            "node": "Validate Row Count",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify Column Mapping": {
+      "main": [
+        [
+          {
+            "node": "Standardize Columns",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Missing Columns Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Detect Columns with Gemini": {
+      "main": [
+        [
+          {
+            "node": "Verify Column Mapping",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route Commands": {
+      "main": [
+        [
+          {
+            "node": "Send Welcome",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Sample Intro",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Validate File Extension",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate File Extension": {
+      "main": [
+        [
+          {
+            "node": "Parse XLSX Upload",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Parse CSV Upload",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Unsupported File Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse XLSX Upload": {
+      "main": [
+        [
+          {
+            "node": "Merge Upload Branches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse CSV Upload": {
+      "main": [
+        [
+          {
+            "node": "Merge Upload Branches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Row Count": {
+      "main": [
+        [
+          {
+            "node": "Limit to 250 Rows",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Row Limit Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Processing Notice": {
+      "main": [
+        []
+      ]
+    },
+    "Send Sample Intro": {
+      "main": [
+        [
+          {
+            "node": "Send Sample Dataset",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Sample Dataset": {
+      "main": [
+        [
+          {
+            "node": "Send Sample Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Sentiment Label": {
+      "main": [
+        [
+          {
+            "node": "Attach Sentiment to Rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Attach Sentiment to Rows": {
+      "main": [
+        [
+          {
+            "node": "Deduplicate Reviews",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Flag Star Sentiment Mismatch": {
+      "main": [
+        [
+          {
+            "node": "Batch Mismatches for Correction",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Batch Mismatches for Correction",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [],
+        [
+          {
+            "node": "Merge Negative Streams",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Correction Output": {
+      "main": [
+        [
+          {
+            "node": "Split Corrected Sentiments",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Keep Corrected Negatives": {
+      "main": [
+        [
+          {
+            "node": "Merge Negative Streams",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Negative Streams": {
+      "main": [
+        [
+          {
+            "node": "Batch Negatives for Root Cause",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Root Cause Output": {
+      "main": [
+        [
+          {
+            "node": "Split Root Cause Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "versionId": "57667e42-f373-4c6e-ad16-90b19585cb61",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "nodeGroups": [],
+  "id": "XdxwHI2LPmnMyAGh",
+  "tags": []
+}
