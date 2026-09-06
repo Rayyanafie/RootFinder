@@ -4,6 +4,12 @@
 
 A **personal portfolio project** built with [n8n](https://n8n.io).
 
+## Try it live 🤖
+
+Message [**@raytestmodel3bot**](https://t.me/raytestmodel3bot) on Telegram and upload a `.csv` or `.xlsx` of customer reviews — it will reply with the analysis report.
+
+> Demo instance of a personal project: it may be offline sometimes, has a 250-row upload limit, and AI output can be wrong. See the [Disclaimer](#disclaimer).
+
 ## What it does
 
 1. **Receives** a review file (`.csv` / `.xlsx`, max **250 rows**) via Telegram
