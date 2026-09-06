@@ -61,6 +61,20 @@ And a few more genuine rows from the same run:
 
 The entire file is processed in one language — the bot detects whether the batch is Indonesian or English, and writes every tag, problem, and recommendation consistently in that language. No mixed-language output.
 
+### Real catches: the mismatch detector in action
+
+The local NLP model is fast, but wording fools it. That's why the star/sentiment detector exists — it catches the model being wrong in **both** directions. Real rows from the pipeline's own run:
+
+| | Review (abridged) | Local NLP | Stars | Detector | Gemini corrected | Reasoning |
+|---|---|---|---|---|---|---|
+| 🔴 **False Positive** | *"Overall oke, tetapi mohon diperhatikan kebersihan… banyak sekali ulat di tembok, di kamar mandi dll."* | Positive | 1★ | ⚠️ → Gemini | **NEGATIVE** | Pujian kecil di awal, tapi keluhan dominan soal kebersihan & ulat = pengalaman buruk |
+| 🟡 **False Negative** | *"Jika pesan di ojol, titiknya di PT Taru Martani… open space jadi sumuk :("* | Negative | 4★ | ⚠️ → Gemini | **NEUTRAL** | Hanya info lokasi + catatan objektif (sumuk), tidak sepenuhnya negatif |
+
+- **Row 1:** the model latched onto the polite *"Overall oke"* opener → called it Positive. But 1★ + a wall of complaints = unhappy. Gemini saw through the opener and flipped it to NEGATIVE.
+- **Row 2:** the model saw *"sumuk"* (hot/stuffy) → called it Negative. But the review is mostly informational — 4★ was fair. Gemini downgraded it to NEUTRAL.
+
+The detector never assumes the star rating is right — it just refuses to let contradictory rows pollute the report silently. Rows Gemini settles as Neutral exit without a root-cause row: no action item for a non-complaint.
+
 > Screenshots of the Telegram chat flow and the finished report coming soon.
 
 ---

@@ -1,11 +1,5 @@
 {
-  "updatedAt": "2026-09-02T14:35:03.366Z",
-  "createdAt": "2026-08-26T13:52:38.503Z",
-  "id": "XdxwHI2LPmnMyAGh",
   "name": "RootFinder",
-  "description": null,
-  "active": true,
-  "isArchived": false,
   "nodes": [
     {
       "parameters": {
@@ -15,10 +9,10 @@
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        3248,
-        208
+        1248,
+        288
       ],
-      "id": "6f514634-3056-4708-ae7b-64278306fc41",
+      "id": "25af7235-5ba1-44e0-847c-07b0428103ac",
       "name": "Loop Over Items"
     },
     {
@@ -31,10 +25,10 @@
       "type": "n8n-nodes-base.aggregate",
       "typeVersion": 1,
       "position": [
-        2224,
-        224
+        224,
+        560
       ],
-      "id": "08221a3e-492b-49cd-9a89-a74b870003b0",
+      "id": "2cd23355-4dae-4306-a69b-1af703580066",
       "name": "Aggregate2"
     },
     {
@@ -45,10 +39,10 @@
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        2000,
-        304
+        0,
+        464
       ],
-      "id": "39c9d661-f599-4ec0-bc90-663792b3948b",
+      "id": "255178d8-2fba-4460-aac1-c924f6b09e6b",
       "name": "Loop Over Items1"
     },
     {
@@ -59,10 +53,10 @@
       "type": "n8n-nodes-base.splitOut",
       "typeVersion": 1,
       "position": [
-        2512,
-        -64
+        512,
+        368
       ],
-      "id": "a5300d21-58a5-44ac-beee-f00f3d6f114f",
+      "id": "756bfee7-9781-4a6a-8c35-4304d8dd59d2",
       "name": "Split Out"
     },
     {
@@ -73,10 +67,10 @@
       "type": "n8n-nodes-base.splitOut",
       "typeVersion": 1,
       "position": [
-        3760,
-        -16
+        1760,
+        96
       ],
-      "id": "c20f13de-2325-4df2-9868-46d644db0c17",
+      "id": "0f929e9a-5d7f-40b8-af93-9a2fb89d1f13",
       "name": "Split Out1"
     },
     {
@@ -89,10 +83,10 @@
       "type": "n8n-nodes-base.convertToFile",
       "typeVersion": 1.1,
       "position": [
-        4048,
-        -16
+        2048,
+        96
       ],
-      "id": "8e5f7ae4-1678-42c0-af1b-631c56d0daa3",
+      "id": "feeebcb0-e635-4f88-920c-45fb30cbf39b",
       "name": "Convert to File"
     },
     {
@@ -104,10 +98,10 @@
       "type": "n8n-nodes-base.removeDuplicates",
       "typeVersion": 2,
       "position": [
-        1552,
-        368
+        -672,
+        384
       ],
-      "id": "bb863327-4de8-49bb-8228-fa66b8f69bb7",
+      "id": "23f7d409-61f7-4f3f-88e5-3dc255bc8fdd",
       "name": "Remove Duplicates"
     },
     {
@@ -122,10 +116,10 @@
       "type": "n8n-nodes-base.telegramTrigger",
       "typeVersion": 1.5,
       "position": [
-        -1488,
-        176
+        -3712,
+        192
       ],
-      "id": "ba861d13-5b72-4ff3-997a-a8afed770f06",
+      "id": "0f744cc6-9c86-4c15-bcd9-0dcf1f514694",
       "name": "Telegram Trigger",
       "webhookId": "003358c1-7d02-4e01-87e0-7fb614c954f8",
       "credentials": {
@@ -145,10 +139,10 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        4272,
-        -16
+        2272,
+        96
       ],
-      "id": "f53d9486-fcac-4c48-8caa-2b3dbd8ec3c2",
+      "id": "4d4fe062-7b2f-4164-a680-70b3c194abee",
       "name": "Send a document",
       "webhookId": "13807ff4-0b76-445f-b862-2849712ccb54",
       "credentials": {
@@ -183,10 +177,10 @@
       "type": "@n8n/n8n-nodes-langchain.googleGemini",
       "typeVersion": 1.1,
       "position": [
-        2448,
-        304
+        448,
+        624
       ],
-      "id": "754f75ac-f945-402a-b3c9-9762f5d6eaa4",
+      "id": "c02f9a52-c9a3-4f83-ba82-57623fb78786",
       "name": "Sentiment Correction",
       "retryOnFail": true,
       "waitBetweenTries": 5000,
@@ -226,10 +220,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        880,
-        304
+        -1344,
+        320
       ],
-      "id": "db433981-e542-49fd-9e5b-6aa61bcd9f69",
+      "id": "3f560e2e-abff-42b3-9985-663634603776",
       "name": "NLP Sentiment",
       "executeOnce": false,
       "retryOnFail": true,
@@ -262,10 +256,10 @@
       "type": "@n8n/n8n-nodes-langchain.googleGemini",
       "typeVersion": 1.1,
       "position": [
-        3696,
-        272
+        1696,
+        368
       ],
-      "id": "02a038ca-14af-4bb7-a998-9d3c128b1917",
+      "id": "18219d59-189a-4968-bd6f-673f9f99be20",
       "name": "Root Cause Detection",
       "credentials": {
         "googlePalmApi": {
@@ -282,10 +276,10 @@
       "type": "n8n-nodes-base.aggregate",
       "typeVersion": 1,
       "position": [
-        3472,
-        176
+        1472,
+        288
       ],
-      "id": "5aced10e-acde-4fbd-ab3f-60e54df7fe4b",
+      "id": "a39ad4e2-ca1c-46f0-b9ad-00a1c0ce4bcd",
       "name": "Aggregate"
     },
     {
@@ -293,10 +287,10 @@
       "type": "n8n-nodes-base.limit",
       "typeVersion": 1,
       "position": [
-        -144,
-        384
+        -2368,
+        400
       ],
-      "id": "5d6be74d-3763-4e15-8df4-2ded9c1df031",
+      "id": "86304b1c-592c-404c-b911-d789113ced59",
       "name": "Limit"
     },
     {
@@ -306,10 +300,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        656,
-        368
+        -1568,
+        384
       ],
-      "id": "88019559-73b2-4ec0-8f91-9c7c8758df57",
+      "id": "e3069229-0452-472b-a73f-2645cc41050c",
       "name": "Code in JavaScript"
     },
     {
@@ -339,10 +333,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        432,
-        464
+        -1792,
+        480
       ],
-      "id": "3ac553fc-c6aa-4cea-9d25-cf3222d64860",
+      "id": "c990ccf9-5b49-47bd-9423-a3b286430b65",
       "name": "If"
     },
     {
@@ -350,10 +344,10 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        -592,
-        480
+        -2816,
+        496
       ],
-      "id": "dbf0a4e5-cc52-431c-8f4d-71c43b13d33a",
+      "id": "19f9336d-c9e3-45cd-87ae-abedf44bab8a",
       "name": "No Operation, do nothing"
     },
     {
@@ -378,10 +372,10 @@
       "type": "@n8n/n8n-nodes-langchain.googleGemini",
       "typeVersion": 1.2,
       "position": [
-        80,
-        464
+        -2144,
+        480
       ],
-      "id": "8747f5fc-e325-4f78-b626-2e22dcaaff8b",
+      "id": "c059bfb0-8022-47a5-9221-0fc612096272",
       "name": "Gemini Mapper",
       "credentials": {
         "googlePalmApi": {
@@ -452,10 +446,10 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.4,
       "position": [
-        -1264,
-        160
+        -3488,
+        176
       ],
-      "id": "14353355-0164-4fc6-b1de-50a92da76199",
+      "id": "31987fd0-b578-4973-b941-a6cc9be0e310",
       "name": "Input Type"
     },
     {
@@ -515,10 +509,10 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.4,
       "position": [
-        -1040,
-        544
+        -3264,
+        560
       ],
-      "id": "89ec394b-be60-4af5-badf-5a2b4fb5002a",
+      "id": "2f390bb6-0d2a-41b1-8f39-b4a8d85fb149",
       "name": "File Type Validation"
     },
     {
@@ -530,10 +524,10 @@
       "type": "n8n-nodes-base.extractFromFile",
       "typeVersion": 1.1,
       "position": [
-        -816,
-        384
+        -3040,
+        400
       ],
-      "id": "9b17bced-e392-4cfe-b261-37df6fa04da0",
+      "id": "2f470878-4f8d-4317-884c-b3f1831bc39d",
       "name": "Extract from XLSX"
     },
     {
@@ -543,10 +537,10 @@
       "type": "n8n-nodes-base.extractFromFile",
       "typeVersion": 1.1,
       "position": [
-        -816,
-        576
+        -3040,
+        592
       ],
-      "id": "86d0b510-45a5-4183-a8cf-68a027bf8ddf",
+      "id": "a09691c2-2b12-4462-921d-f8a555715159",
       "name": "Extract from CSV"
     },
     {
@@ -560,10 +554,10 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        -816,
-        768
+        -3040,
+        784
       ],
-      "id": "da0e517f-4312-4049-b965-24f667c5d6da",
+      "id": "b918231d-f81e-48f3-a88e-d33c6f00f9a3",
       "name": "Send Error FIletype",
       "webhookId": "7f0efa30-fced-4c34-82ce-de7436a0eeaa",
       "credentials": {
@@ -600,10 +594,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        -368,
-        480
+        -2592,
+        496
       ],
-      "id": "50e1aa32-b9a0-4951-bdab-392dae5302e2",
+      "id": "9b3837b5-ced5-48ee-9cbc-8e9593989a06",
       "name": "Input Lenght"
     },
     {
@@ -617,10 +611,10 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        144,
-        272
+        -2080,
+        288
       ],
-      "id": "5d813ba2-3221-497b-993e-887ed2d102cd",
+      "id": "132bccea-947f-40c5-b006-b15d80656631",
       "name": "Processing FIle",
       "webhookId": "7f0efa30-fced-4c34-82ce-de7436a0eeaa",
       "executeOnce": true,
@@ -642,10 +636,10 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        -1040,
-        -16
+        -3264,
+        0
       ],
-      "id": "11d917b3-4daf-47f5-affa-e23dc7273c35",
+      "id": "34cfb178-9256-4b4d-88b0-058b8a64e2f9",
       "name": "Send Greeting",
       "webhookId": "7f0efa30-fced-4c34-82ce-de7436a0eeaa",
       "executeOnce": true,
@@ -667,10 +661,10 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        -1040,
-        176
+        -3264,
+        192
       ],
-      "id": "7eac1726-585d-4762-bb07-fbb64ab5216d",
+      "id": "58f326e4-0a00-4503-9b07-a22fa051de04",
       "name": "Send Sample",
       "webhookId": "7f0efa30-fced-4c34-82ce-de7436a0eeaa",
       "executeOnce": true,
@@ -691,10 +685,10 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        -816,
-        176
+        -3040,
+        192
       ],
-      "id": "ca944aa0-f62d-4a71-bc1c-55bc91a01069",
+      "id": "53d0d429-2e93-4ad2-94bc-03ecafd95c87",
       "name": "Send Sample Doc",
       "webhookId": "7f0efa30-fced-4c34-82ce-de7436a0eeaa",
       "executeOnce": true,
@@ -709,16 +703,16 @@
       "parameters": {
         "operation": "sendDocument",
         "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
-        "file": "BQACAgUAAxkDAAIBXWqYMg0w5tggAei4qyzpthYx9ODSAAIeHwACcmnIVKps5FJGoNa4PQQ",
+        "file": "BQACAgUAAxkDAAIBfGqdlhl8fMd-PjTmKrVlqiUrPIbjAAKCIAACOZfpVIKa4R0h8MgrPQQ",
         "additionalFields": {}
       },
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        -592,
-        176
+        -2816,
+        192
       ],
-      "id": "dc414783-61db-4376-b6ae-fe9eb7b9a3a9",
+      "id": "46578305-c326-4dcf-99c4-9bf2004c1105",
       "name": "Send Sample Doc 2",
       "webhookId": "7f0efa30-fced-4c34-82ce-de7436a0eeaa",
       "executeOnce": true,
@@ -740,10 +734,10 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        -144,
-        576
+        -2368,
+        592
       ],
-      "id": "4fdf37ee-cb1a-42b5-a244-4afc14522fe2",
+      "id": "199f602d-85b3-4af0-9d84-cdaa7cb07261",
       "name": "Send Error File Length",
       "webhookId": "7f0efa30-fced-4c34-82ce-de7436a0eeaa",
       "executeOnce": true,
@@ -765,10 +759,10 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        656,
-        560
+        -1568,
+        576
       ],
-      "id": "c57d1fbc-2b48-4823-879f-e333d3893a82",
+      "id": "07f1181e-13a9-437d-b61d-bc34d348413b",
       "name": "Send Error Column Missing",
       "webhookId": "7f0efa30-fced-4c34-82ce-de7436a0eeaa",
       "executeOnce": true,
@@ -796,10 +790,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1104,
-        304
+        -1120,
+        320
       ],
-      "id": "08849ee5-e41c-46d6-9d8f-a35e62031bb7",
+      "id": "81e67a40-4781-4dad-972e-f6d1307384c4",
       "name": "Fetch Sentiment"
     },
     {
@@ -811,10 +805,10 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        1328,
-        368
+        -896,
+        384
       ],
-      "id": "eef0b04f-8a3a-419f-a6fe-6958f0f31d64",
+      "id": "92e573cd-5114-4a07-8d9c-63b537825622",
       "name": "Merge Sentiment Result"
     },
     {
@@ -928,10 +922,10 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.4,
       "position": [
-        1776,
-        336
+        -448,
+        352
       ],
-      "id": "0491acab-f919-4bb8-ae41-cfdfb62792dd",
+      "id": "95275aa0-2e86-40bc-a3f2-ec927981cd1f",
       "name": "Sentiment Result Classification"
     },
     {
@@ -952,10 +946,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        2224,
-        -64
+        224,
+        368
       ],
-      "id": "46ace91c-6119-4859-a605-213639f1663a",
+      "id": "2b971a8f-b8b5-4b95-865e-ab02478d3908",
       "name": "Parse Result"
     },
     {
@@ -972,11 +966,11 @@
                 },
                 "conditions": [
                   {
-                    "leftValue": "={{ $json.corrected_sentiment }}",
-                    "rightValue": "Negative",
+                    "leftValue": "={{ $json.corrected_sentiment.toLowerCase() }}",
+                    "rightValue": "negative",
                     "operator": {
                       "type": "string",
-                      "operation": "equals"
+                      "operation": "contains"
                     },
                     "id": "dd54e21c-0f20-44e3-8480-779c5c6f4e13"
                   }
@@ -991,10 +985,10 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.4,
       "position": [
-        2800,
-        -64
+        800,
+        368
       ],
-      "id": "d8264353-8a43-4f11-9872-646fddb8b249",
+      "id": "f4e0bbfc-c2d4-4a90-a02c-a4a42c714367",
       "name": "Select Negative Sentiment"
     },
     {
@@ -1002,10 +996,10 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        3024,
-        208
+        1024,
+        288
       ],
-      "id": "af5048fa-8173-46c7-b9b1-1f2b1de638b9",
+      "id": "060aadce-77d8-4efd-ad91-1d0ab54042aa",
       "name": "Merge Fixed Sentiment"
     },
     {
@@ -1026,13 +1020,25 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        3472,
-        -16
+        1472,
+        96
       ],
-      "id": "cfe8ebfa-2eb9-40ae-91a9-f7eca7ba625c",
+      "id": "0560de55-d051-4bd4-b920-76166e64ceb4",
       "name": "Parse Review Result"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -224,
+        464
+      ],
+      "id": "2541ba56-8817-4faa-b240-9c2af1f27558",
+      "name": "Merge False Sentiment"
     }
   ],
+  "pinData": {},
   "connections": {
     "Loop Over Items": {
       "main": [
@@ -1342,11 +1348,6 @@
         ]
       ]
     },
-    "Processing FIle": {
-      "main": [
-        []
-      ]
-    },
     "Send Sample": {
       "main": [
         [
@@ -1395,16 +1396,16 @@
       "main": [
         [
           {
-            "node": "Loop Over Items1",
+            "node": "Merge False Sentiment",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "Loop Over Items1",
+            "node": "Merge False Sentiment",
             "type": "main",
-            "index": 0
+            "index": 1
           }
         ],
         [],
@@ -1460,47 +1461,30 @@
           }
         ]
       ]
+    },
+    "Merge False Sentiment": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
+  "active": false,
   "settings": {
     "executionOrder": "v1",
     "binaryMode": "separate",
-    "availableInMCP": true
+    "availableInMCP": false
   },
-  "staticData": null,
+  "versionId": "151238c4-d409-4394-9c16-04e4a2162317",
   "meta": {
-    "templateCredsSetupCompleted": true
+    "instanceId": "52a5b25113c671ea88bf8f02d095fb4a11c55efb0a9056c9c87c3c2a46196ddc"
   },
   "nodeGroups": [],
-  "pinData": {},
-  "versionId": "57667e42-f373-4c6e-ad16-90b19585cb61",
-  "activeVersionId": "57667e42-f373-4c6e-ad16-90b19585cb61",
-  "versionCounter": 361,
-  "triggerCount": 1,
-  "sourceWorkflowId": null,
-  "tags": [],
-  "shared": [
-    {
-      "updatedAt": "2026-08-26T13:52:38.503Z",
-      "createdAt": "2026-08-26T13:52:38.503Z",
-      "role": "workflow:owner",
-      "workflowId": "XdxwHI2LPmnMyAGh",
-      "projectId": "fKJUnRuo1Zc3o9l8",
-      "project": {
-        "updatedAt": "2026-08-26T13:51:57.953Z",
-        "createdAt": "2026-08-26T13:48:42.965Z",
-        "id": "fKJUnRuo1Zc3o9l8",
-        "name": "rayya admin@gmail.com <admin@gmail.com>",
-        "type": "personal",
-        "icon": null,
-        "description": null,
-        "customTelemetryTags": [],
-        "creatorId": "5a865949-083a-494e-b4c2-e6a8ed1b72f6"
-      }
-    }
-  ],
-  "versionMetadata": {
-    "name": "Version 57667e42",
-    "description": ""
-  }
+  "id": "dLbaMaMD9dLvJWAG",
+  "tags": []
 }
