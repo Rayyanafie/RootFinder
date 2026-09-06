@@ -1,5 +1,11 @@
 {
+  "updatedAt": "2026-09-02T14:35:03.366Z",
+  "createdAt": "2026-08-26T13:52:38.503Z",
+  "id": "XdxwHI2LPmnMyAGh",
   "name": "RootFinder",
+  "description": null,
+  "active": true,
+  "isArchived": false,
   "nodes": [
     {
       "parameters": {
@@ -13,7 +19,7 @@
         208
       ],
       "id": "6f514634-3056-4708-ae7b-64278306fc41",
-      "name": "Batch Negatives for Root Cause"
+      "name": "Loop Over Items"
     },
     {
       "parameters": {
@@ -29,7 +35,7 @@
         224
       ],
       "id": "08221a3e-492b-49cd-9a89-a74b870003b0",
-      "name": "Rejoin Corrected Batches"
+      "name": "Aggregate2"
     },
     {
       "parameters": {
@@ -43,7 +49,7 @@
         304
       ],
       "id": "39c9d661-f599-4ec0-bc90-663792b3948b",
-      "name": "Batch Mismatches for Correction"
+      "name": "Loop Over Items1"
     },
     {
       "parameters": {
@@ -57,7 +63,7 @@
         -64
       ],
       "id": "a5300d21-58a5-44ac-beee-f00f3d6f114f",
-      "name": "Split Corrected Sentiments"
+      "name": "Split Out"
     },
     {
       "parameters": {
@@ -71,7 +77,7 @@
         -16
       ],
       "id": "c20f13de-2325-4df2-9868-46d644db0c17",
-      "name": "Split Root Cause Results"
+      "name": "Split Out1"
     },
     {
       "parameters": {
@@ -87,7 +93,7 @@
         -16
       ],
       "id": "8e5f7ae4-1678-42c0-af1b-631c56d0daa3",
-      "name": "Export Analysis to XLSX"
+      "name": "Convert to File"
     },
     {
       "parameters": {
@@ -102,7 +108,7 @@
         368
       ],
       "id": "bb863327-4de8-49bb-8228-fa66b8f69bb7",
-      "name": "Deduplicate Reviews"
+      "name": "Remove Duplicates"
     },
     {
       "parameters": {
@@ -120,11 +126,11 @@
         176
       ],
       "id": "ba861d13-5b72-4ff3-997a-a8afed770f06",
-      "name": "Telegram Message Received",
-      "webhookId": "",
+      "name": "Telegram Trigger",
+      "webhookId": "003358c1-7d02-4e01-87e0-7fb614c954f8",
       "credentials": {
         "telegramApi": {
-          "id": "",
+          "id": "HPKvWxUHFkt6ni1A",
           "name": "RootFinder"
         }
       }
@@ -132,7 +138,7 @@
     {
       "parameters": {
         "operation": "sendDocument",
-        "chatId": "={{ $('Telegram Message Received').item.json.message.chat.id }}",
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
         "binaryData": true,
         "additionalFields": {}
       },
@@ -143,11 +149,11 @@
         -16
       ],
       "id": "f53d9486-fcac-4c48-8caa-2b3dbd8ec3c2",
-      "name": "Send Analysis Report",
-      "webhookId": "",
+      "name": "Send a document",
+      "webhookId": "13807ff4-0b76-445f-b862-2849712ccb54",
       "credentials": {
         "telegramApi": {
-          "id": "",
+          "id": "HPKvWxUHFkt6ni1A",
           "name": "RootFinder"
         }
       }
@@ -163,7 +169,7 @@
         "messages": {
           "values": [
             {
-              "content": "=You are an automated sentiment correction model. Your ONLY job is to resolve discrepancies between customer review texts, star ratings, and preliminary AI sentiment predictions for a BATCH of customer reviews.\n\nFor each review in the input list, determine the ACTUAL sentiment of the review text. Pay close attention to sarcasm, irony, local slang, or user mistakes (e.g., writing a glowing review but accidentally leaving 1 star, or leaving 5 stars but writing a harsh complaint).\n\nOutput STRICTLY as a JSON array. Do not include conversational text, apologies, or markdown outside of the JSON block.\n\nJSON Schema:\n[\n  {\n    \"original_index\": \"The index or ID of the review provided in the prompt\",\n    \"corrected_sentiment\": \"Positive | Negative | Neutral\",\n    \"reasoning\": \"1 short sentence explaining why you chose this sentiment (e.g., 'Customer was being sarcastic' or 'User misclicked star rating').\"\n  }\n]"
+              "content": "=You are an automated sentiment correction model. Your ONLY job is to resolve discrepancies between customer review texts, star ratings, and preliminary AI sentiment predictions for a BATCH of customer reviews.\n\nFor each review in the input list, determine the ACTUAL sentiment of the review text. Pay close attention to sarcasm, irony, local slang, or user mistakes (e.g., writing a glowing review but accidentally leaving 1 star, or leaving 5 stars but writing a harsh complaint).\n\nOutput STRICTLY as a JSON array. Do not include conversational text, apologies, or markdown outside of the JSON block.\n\nJSON Schema:\n[\n  {\n    \"original_index\": \"The index or ID of the review provided in the prompt\",\n    \"corrected_sentiment\": \"Positive | Negative | Neutral\",\n    \"reasoning\": \"1 short sentence explaining why you chose this sentiment (e.g., 'Customer was being sarcastic' or 'User misclicked star rating').\"\n  }\n]\n\ncorrected_sentiment values MUST be exactly one of: Positive | Negative | Neutral (English, capitalized). The 'reasoning' field may be written in the review's own language."
             },
             {
               "content": "=Analyze and correct the sentiment for the following batch of reviews:\n\n{{ JSON.stringify($json) }}"
@@ -181,12 +187,12 @@
         304
       ],
       "id": "754f75ac-f945-402a-b3c9-9762f5d6eaa4",
-      "name": "Correct Sentiment with Gemini",
+      "name": "Sentiment Correction",
       "retryOnFail": true,
       "waitBetweenTries": 5000,
       "credentials": {
         "googlePalmApi": {
-          "id": "",
+          "id": "97MXxtB7WkX6wllh",
           "name": "Google Gemini(PaLM) Api account"
         }
       }
@@ -224,7 +230,7 @@
         304
       ],
       "id": "db433981-e542-49fd-9e5b-6aa61bcd9f69",
-      "name": "Predict Sentiment Local API",
+      "name": "NLP Sentiment",
       "executeOnce": false,
       "retryOnFail": true,
       "waitBetweenTries": 5000,
@@ -241,13 +247,10 @@
         "messages": {
           "values": [
             {
-              "content": "=You are an automated customer experience analyzer. Your job is to extract the core complaint from a batched list of negative or false-positive reviews. \nOutput your analysis STRICTLY as a JSON array. Do not include conversational text, apologies, or markdown formatting outside of the JSON block.\n\nRules for \"tags\":\nYou must select 3 tags from this exact list. fill with null if less than 3 tags. DO NOT invent new tags:\n[Pricing, Beverage_Quality, Food_Quality, Ambiance, Cleanliness, Service_Speed, Staff_Attitude, Facilities, Policy, Hygiene]\n\nJSON Schema:\n[\n  {\n    \"original_index\": \"The index or ID of the review provided in the prompt\",\n    \"tags\": [\"Tag1\", \"Tag2\"],\n    \"root_problem\": \"1-2 short sentences summarizing the exact complaint.\",\n    \"recommendation\": \"1 short sentence suggesting how the business can fix it.\"\n  }\n]"
+              "content": "=You are an automated customer experience analyzer. Your job is to extract the core complaint from a batch of negative customer reviews. Output your analysis STRICTLY as a JSON array. No conversational text or markdown outside the JSON block.\n\nLANGUAGE RULE - dataset-level, not per review:\n1. All reviews in this batch come from ONE file. Detect the single dominant language of the batch (Indonesian or English) and use it for EVERY row.\n2. Write 'root_problem' and 'recommendation' in that language.\n3. For 'tags', use the translated list matching the batch language. Every row in the batch must use the SAME tag language. Never mix languages between rows or inside one row.\n4. Structural JSON keys ('original_index', 'tags', 'root_problem', 'recommendation') stay English.\n\nRules for \"tags\":\nPick up to 3 from the list below using only the exact names for the batch language. Fill with null if fewer than 3 apply. Do not invent synonyms.\n\nENGLISH tags: [Pricing, Beverage_Quality, Food_Quality, Ambiance, Cleanliness, Service_Speed, Staff_Attitude, Facilities, Policy, Hygiene]\nINDONESIAN tags: [Harga, Kualitas Minuman, Kualitas Makanan, Suasana, Kebersihan, Kecepatan Pelayanan, Sikap Staf, Fasilitas, Kebijakan, Higienitas]\n\nJSON Schema:\n[\n  {\n    \"original_index\": \"the index or ID of the review\",\n    \"tags\": [\"Tag1\", \"Tag2\", \"Tag3 or null\"],\n    \"root_problem\": \"1-2 short sentences summarizing the exact complaint\",\n    \"recommendation\": \"1 short sentence suggesting how the business can fix it\"\n  }\n]"
             },
             {
               "content": "=Analyze the following batch of customer reviews:\n\n{{ JSON.stringify($json) }}"
-            },
-            {
-              "content": "CRITICAL LANGUAGE INSTRUCTION:\n1. Detect the original language of each individual review.\n2. ALL generated values (including 'tags', 'root_problem', and 'recommendation') MUST be written in the exact same language as the original review text. \n3. For the 'tags' array, select up to 3 concepts from your standard list (Pricing, Food Quality, Service Speed, etc.) but TRANSLATE those tags into the detected language (e.g., if the review is in Indonesian, output tags like \"Harga\", \"Kualitas Makanan\", or \"Kecepatan Pelayanan\").\n4. The structural JSON keys (\"original_index\", \"tags\", \"root_problem\", \"recommendation\") MUST remain strictly in English."
             }
           ]
         },
@@ -263,10 +266,10 @@
         272
       ],
       "id": "02a038ca-14af-4bb7-a998-9d3c128b1917",
-      "name": "Detect Root Cause with Gemini",
+      "name": "Root Cause Detection",
       "credentials": {
         "googlePalmApi": {
-          "id": "",
+          "id": "97MXxtB7WkX6wllh",
           "name": "Google Gemini(PaLM) Api account"
         }
       }
@@ -283,12 +286,10 @@
         176
       ],
       "id": "5aced10e-acde-4fbd-ab3f-60e54df7fe4b",
-      "name": "Rejoin Root Cause Batches"
+      "name": "Aggregate"
     },
     {
-      "parameters": {
-        "maxItems": 250
-      },
+      "parameters": {},
       "type": "n8n-nodes-base.limit",
       "typeVersion": 1,
       "position": [
@@ -296,11 +297,11 @@
         384
       ],
       "id": "5d6be74d-3763-4e15-8df4-2ded9c1df031",
-      "name": "Limit to 250 Rows"
+      "name": "Limit"
     },
     {
       "parameters": {
-        "jsCode": "// 1. Get the text map from Gemini (which is directly connected to this node)\nconst geminiRaw = $input.all()[0].json.content.parts[0].text;\n\n// Clean it up (removes markdown formatting if Gemini added it) and parse it into an object\nconst map = JSON.parse(geminiRaw.replace(/```json|```/g, '').trim());\n\n// 2. REACH BACK and grab the 50+ rows from your Extraction node!\n// ⚠️ IMPORTANT: If your extract node has a different name, change it here:\nconst allData = $items(\"Parse XLSX Upload\"); \n\nlet result = [];\n\n// 3. Loop through all original rows\nfor (let i = 0; i < allData.length; i++) {\n  let item = allData[i].json;\n  \n  // Standardize the columns based on what Gemini figured out\n  item.ReviewTextOriginal = item[map.text_column];\n  item.ReviewRateStars = Number(item[map.rating_column]);\n  \n  // If they provided an ID, use it. If not, invent one!\n  item.ReviewId = map.id_column ? item[map.id_column] : `auto_gen_${i}`;\n  \n  result.push({ json: item });\n}\n\n// 4. Output the full list of standardized rows\nreturn result;"
+        "jsCode": "// 1. Get the text map from Gemini (which is directly connected to this node)\nconst geminiRaw = $input.all()[0].json.content.parts[0].text;\n\n// Clean it up (removes markdown formatting if Gemini added it) and parse it into an object\nconst map = JSON.parse(geminiRaw.replace(/```json|```/g, '').trim());\n\n// 2. REACH BACK and grab the 50+ rows from your Extraction node!\n// ⚠️ IMPORTANT: If your extract node has a different name, change it here:\nconst allData = $items(\"Extract from XLSX\"); \n\nlet result = [];\n\n// 3. Loop through all original rows\nfor (let i = 0; i < allData.length; i++) {\n  let item = allData[i].json;\n  \n  // Standardize the columns based on what Gemini figured out\n  item.ReviewTextOriginal = item[map.text_column];\n  item.ReviewRateStars = Number(item[map.rating_column]);\n  \n  // If they provided an ID, use it. If not, invent one!\n  item.ReviewId = map.id_column ? item[map.id_column] : `auto_gen_${i}`;\n  \n  result.push({ json: item });\n}\n\n// 4. Output the full list of standardized rows\nreturn result;"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -309,7 +310,7 @@
         368
       ],
       "id": "88019559-73b2-4ec0-8f91-9c7c8758df57",
-      "name": "Standardize Columns"
+      "name": "Code in JavaScript"
     },
     {
       "parameters": {
@@ -342,7 +343,7 @@
         464
       ],
       "id": "3ac553fc-c6aa-4cea-9d25-cf3222d64860",
-      "name": "Verify Column Mapping"
+      "name": "If"
     },
     {
       "parameters": {},
@@ -353,7 +354,7 @@
         480
       ],
       "id": "dbf0a4e5-cc52-431c-8f4d-71c43b13d33a",
-      "name": "Merge Upload Branches"
+      "name": "No Operation, do nothing"
     },
     {
       "parameters": {
@@ -381,10 +382,10 @@
         464
       ],
       "id": "8747f5fc-e325-4f78-b626-2e22dcaaff8b",
-      "name": "Detect Columns with Gemini",
+      "name": "Gemini Mapper",
       "credentials": {
         "googlePalmApi": {
-          "id": "",
+          "id": "97MXxtB7WkX6wllh",
           "name": "Google Gemini(PaLM) Api account"
         }
       }
@@ -455,7 +456,7 @@
         160
       ],
       "id": "14353355-0164-4fc6-b1de-50a92da76199",
-      "name": "Route Commands"
+      "name": "Input Type"
     },
     {
       "parameters": {
@@ -518,7 +519,7 @@
         544
       ],
       "id": "89ec394b-be60-4af5-badf-5a2b4fb5002a",
-      "name": "Validate File Extension"
+      "name": "File Type Validation"
     },
     {
       "parameters": {
@@ -533,7 +534,7 @@
         384
       ],
       "id": "9b17bced-e392-4cfe-b261-37df6fa04da0",
-      "name": "Parse XLSX Upload"
+      "name": "Extract from XLSX"
     },
     {
       "parameters": {
@@ -546,11 +547,11 @@
         576
       ],
       "id": "86d0b510-45a5-4183-a8cf-68a027bf8ddf",
-      "name": "Parse CSV Upload"
+      "name": "Extract from CSV"
     },
     {
       "parameters": {
-        "chatId": "={{ $('Telegram Message Received').item.json.message.chat.id }}",
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
         "text": "⚠️ Error: Hanya Menerima CSV dan XLSX",
         "additionalFields": {
           "appendAttribution": false
@@ -563,11 +564,11 @@
         768
       ],
       "id": "da0e517f-4312-4049-b965-24f667c5d6da",
-      "name": "Send Unsupported File Error",
-      "webhookId": "",
+      "name": "Send Error FIletype",
+      "webhookId": "7f0efa30-fced-4c34-82ce-de7436a0eeaa",
       "credentials": {
         "telegramApi": {
-          "id": "",
+          "id": "HPKvWxUHFkt6ni1A",
           "name": "RootFinder"
         }
       }
@@ -603,11 +604,11 @@
         480
       ],
       "id": "50e1aa32-b9a0-4951-bdab-392dae5302e2",
-      "name": "Validate Row Count"
+      "name": "Input Lenght"
     },
     {
       "parameters": {
-        "chatId": "={{ $('Telegram Message Received').item.json.message.chat.id }}",
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
         "text": "Processing file, please wait",
         "additionalFields": {
           "appendAttribution": false
@@ -620,19 +621,19 @@
         272
       ],
       "id": "5d813ba2-3221-497b-993e-887ed2d102cd",
-      "name": "Send Processing Notice",
-      "webhookId": "",
+      "name": "Processing FIle",
+      "webhookId": "7f0efa30-fced-4c34-82ce-de7436a0eeaa",
       "executeOnce": true,
       "credentials": {
         "telegramApi": {
-          "id": "",
+          "id": "HPKvWxUHFkt6ni1A",
           "name": "RootFinder"
         }
       }
     },
     {
       "parameters": {
-        "chatId": "={{ $('Telegram Message Received').item.json.message.chat.id }}",
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
         "text": "=👋 Welcome to RootFinder!\n\nI am an automated data engineering pipeline designed to turn messy customer feedback into actionable business insights.\n\nHow it works:\nSimply upload a .csv or .xlsx file containing customer reviews. My AI will automatically detect your columns, analyze the sentiment, extract the root causes, and return a clean, localized action-item report!\n\n🛠 Available Commands:\n/sample — Get a test dataset and a finished report to see me in action.\n/start — Show this welcome message.\n\n⚠️ System Limits:\n• Please limit uploads to a maximum of 250 rows per file to ensure optimal processing speed.\n\n🔒 Privacy Notice:\nAll files are processed securely in-memory for immediate analysis and are never permanently stored on our servers.",
         "additionalFields": {
           "appendAttribution": false
@@ -645,19 +646,19 @@
         -16
       ],
       "id": "11d917b3-4daf-47f5-affa-e23dc7273c35",
-      "name": "Send Welcome",
-      "webhookId": "",
+      "name": "Send Greeting",
+      "webhookId": "7f0efa30-fced-4c34-82ce-de7436a0eeaa",
       "executeOnce": true,
       "credentials": {
         "telegramApi": {
-          "id": "",
+          "id": "HPKvWxUHFkt6ni1A",
           "name": "RootFinder"
         }
       }
     },
     {
       "parameters": {
-        "chatId": "={{ $('Telegram Message Received').item.json.message.chat.id }}",
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
         "text": "=Here are the sample file, check it out",
         "additionalFields": {
           "appendAttribution": false
@@ -670,12 +671,12 @@
         176
       ],
       "id": "7eac1726-585d-4762-bb07-fbb64ab5216d",
-      "name": "Send Sample Intro",
-      "webhookId": "",
+      "name": "Send Sample",
+      "webhookId": "7f0efa30-fced-4c34-82ce-de7436a0eeaa",
       "executeOnce": true,
       "credentials": {
         "telegramApi": {
-          "id": "",
+          "id": "HPKvWxUHFkt6ni1A",
           "name": "RootFinder"
         }
       }
@@ -683,8 +684,8 @@
     {
       "parameters": {
         "operation": "sendDocument",
-        "chatId": "={{ $('Telegram Message Received').item.json.message.chat.id }}",
-        "file": "",
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "file": "BQACAgUAAxkBAAIBWGqYMUjF39TDxVu5i1PAXsNmhFMIAAIZHwACcmnIVOEYF0eSVdKVPQQ",
         "additionalFields": {}
       },
       "type": "n8n-nodes-base.telegram",
@@ -694,12 +695,12 @@
         176
       ],
       "id": "ca944aa0-f62d-4a71-bc1c-55bc91a01069",
-      "name": "Send Sample Dataset",
-      "webhookId": "",
+      "name": "Send Sample Doc",
+      "webhookId": "7f0efa30-fced-4c34-82ce-de7436a0eeaa",
       "executeOnce": true,
       "credentials": {
         "telegramApi": {
-          "id": "",
+          "id": "HPKvWxUHFkt6ni1A",
           "name": "RootFinder"
         }
       }
@@ -707,8 +708,8 @@
     {
       "parameters": {
         "operation": "sendDocument",
-        "chatId": "={{ $('Telegram Message Received').item.json.message.chat.id }}",
-        "file": "",
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "file": "BQACAgUAAxkDAAIBXWqYMg0w5tggAei4qyzpthYx9ODSAAIeHwACcmnIVKps5FJGoNa4PQQ",
         "additionalFields": {}
       },
       "type": "n8n-nodes-base.telegram",
@@ -718,20 +719,20 @@
         176
       ],
       "id": "dc414783-61db-4376-b6ae-fe9eb7b9a3a9",
-      "name": "Send Sample Report",
-      "webhookId": "",
+      "name": "Send Sample Doc 2",
+      "webhookId": "7f0efa30-fced-4c34-82ce-de7436a0eeaa",
       "executeOnce": true,
       "credentials": {
         "telegramApi": {
-          "id": "",
+          "id": "HPKvWxUHFkt6ni1A",
           "name": "RootFinder"
         }
       }
     },
     {
       "parameters": {
-        "chatId": "={{ $('Telegram Message Received').item.json.message.chat.id }}",
-        "text": "⚠️ Error: Please make sure the amount of review is no more than 250",
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "⚠️ Error: Please make sure the amount of review is under 200",
         "additionalFields": {
           "appendAttribution": false
         }
@@ -743,19 +744,19 @@
         576
       ],
       "id": "4fdf37ee-cb1a-42b5-a244-4afc14522fe2",
-      "name": "Send Row Limit Error",
-      "webhookId": "",
+      "name": "Send Error File Length",
+      "webhookId": "7f0efa30-fced-4c34-82ce-de7436a0eeaa",
       "executeOnce": true,
       "credentials": {
         "telegramApi": {
-          "id": "",
+          "id": "HPKvWxUHFkt6ni1A",
           "name": "RootFinder"
         }
       }
     },
     {
       "parameters": {
-        "chatId": "={{ $('Telegram Message Received').item.json.message.chat.id }}",
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
         "text": "⚠️ Error:  Please make sure there is review and star column in your file",
         "additionalFields": {
           "appendAttribution": false
@@ -768,12 +769,12 @@
         560
       ],
       "id": "c57d1fbc-2b48-4823-879f-e333d3893a82",
-      "name": "Send Missing Columns Error",
-      "webhookId": "",
+      "name": "Send Error Column Missing",
+      "webhookId": "7f0efa30-fced-4c34-82ce-de7436a0eeaa",
       "executeOnce": true,
       "credentials": {
         "telegramApi": {
-          "id": "",
+          "id": "HPKvWxUHFkt6ni1A",
           "name": "RootFinder"
         }
       }
@@ -799,7 +800,7 @@
         304
       ],
       "id": "08849ee5-e41c-46d6-9d8f-a35e62031bb7",
-      "name": "Read Sentiment Label"
+      "name": "Fetch Sentiment"
     },
     {
       "parameters": {
@@ -814,7 +815,7 @@
         368
       ],
       "id": "eef0b04f-8a3a-419f-a6fe-6958f0f31d64",
-      "name": "Attach Sentiment to Rows"
+      "name": "Merge Sentiment Result"
     },
     {
       "parameters": {
@@ -830,7 +831,7 @@
                 },
                 "conditions": [
                   {
-                    "leftValue": "={{ $json.Sentiment  === 'Positive' && Number($json.ReviewRateStars) <= 3 }}",
+                    "leftValue": "={{ $json.Sentiment !== 'Negative' && Number($json.ReviewRateStars) <= 2 }}",
                     "rightValue": "",
                     "operator": {
                       "type": "boolean",
@@ -856,7 +857,7 @@
                 "conditions": [
                   {
                     "id": "f232a85f-6d83-4947-a169-298d603675d8",
-                    "leftValue": "={{ $json.Sentiment  === 'Negative' && Number($json.ReviewRateStars) >= 4 }}",
+                    "leftValue": "={{ $json.Sentiment !== 'Positive' && Number($json.ReviewRateStars) >= 4 }}",
                     "rightValue": "",
                     "operator": {
                       "type": "boolean",
@@ -881,7 +882,7 @@
                 "conditions": [
                   {
                     "id": "877f9dc6-030d-4f69-8613-b3d1c9938078",
-                    "leftValue": "={{ $json.Sentiment  === 'Positive' && Number($json.ReviewRateStars) >= 3 }}",
+                    "leftValue": "={{ $json.Sentiment === 'Positive' && Number($json.ReviewRateStars) >= 4 }}",
                     "rightValue": "",
                     "operator": {
                       "type": "boolean",
@@ -906,7 +907,7 @@
                 "conditions": [
                   {
                     "id": "2b248d0a-89a9-408d-b3d6-551a72b03d4d",
-                    "leftValue": "={{ $json.Sentiment  === 'Negative' && Number($json.ReviewRateStars) <= 4 }}",
+                    "leftValue": "={{ $json.Sentiment === 'Negative' && Number($json.ReviewRateStars) <= 3 }}",
                     "rightValue": "",
                     "operator": {
                       "type": "boolean",
@@ -931,7 +932,7 @@
         336
       ],
       "id": "0491acab-f919-4bb8-ae41-cfdfb62792dd",
-      "name": "Flag Star Sentiment Mismatch"
+      "name": "Sentiment Result Classification"
     },
     {
       "parameters": {
@@ -940,7 +941,7 @@
             {
               "id": "992a0be6-f535-4441-86f9-06c3cdcb00f3",
               "name": "parsed_text",
-              "value": "={{ JSON.parse($json.content.parts[0].text) }}",
+              "value": "={{ JSON.parse($json.content.parts[0].text).map(function(r) { r.corrected_sentiment = String(r.corrected_sentiment || '').toUpperCase(); return r; }) }}",
               "type": "array"
             }
           ]
@@ -955,7 +956,7 @@
         -64
       ],
       "id": "46ace91c-6119-4859-a605-213639f1663a",
-      "name": "Parse Correction Output"
+      "name": "Parse Result"
     },
     {
       "parameters": {
@@ -994,7 +995,7 @@
         -64
       ],
       "id": "d8264353-8a43-4f11-9872-646fddb8b249",
-      "name": "Keep Corrected Negatives"
+      "name": "Select Negative Sentiment"
     },
     {
       "parameters": {},
@@ -1005,7 +1006,7 @@
         208
       ],
       "id": "af5048fa-8173-46c7-b9b1-1f2b1de638b9",
-      "name": "Merge Negative Streams"
+      "name": "Merge Fixed Sentiment"
     },
     {
       "parameters": {
@@ -1029,380 +1030,379 @@
         -16
       ],
       "id": "cfe8ebfa-2eb9-40ae-91a9-f7eca7ba625c",
-      "name": "Parse Root Cause Output"
+      "name": "Parse Review Result"
     }
   ],
-  "pinData": {},
   "connections": {
-    "Batch Negatives for Root Cause": {
+    "Loop Over Items": {
       "main": [
         [
           {
-            "node": "Parse Root Cause Output",
+            "node": "Parse Review Result",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "Rejoin Root Cause Batches",
+            "node": "Aggregate",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Rejoin Corrected Batches": {
+    "Aggregate2": {
       "main": [
         [
           {
-            "node": "Correct Sentiment with Gemini",
+            "node": "Sentiment Correction",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Batch Mismatches for Correction": {
+    "Loop Over Items1": {
       "main": [
         [
           {
-            "node": "Parse Correction Output",
+            "node": "Parse Result",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "Rejoin Corrected Batches",
+            "node": "Aggregate2",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Split Corrected Sentiments": {
+    "Split Out": {
       "main": [
         [
           {
-            "node": "Keep Corrected Negatives",
+            "node": "Select Negative Sentiment",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Split Root Cause Results": {
+    "Split Out1": {
       "main": [
         [
           {
-            "node": "Export Analysis to XLSX",
+            "node": "Convert to File",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Deduplicate Reviews": {
+    "Remove Duplicates": {
       "main": [
         [
           {
-            "node": "Flag Star Sentiment Mismatch",
+            "node": "Sentiment Result Classification",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Telegram Message Received": {
+    "Telegram Trigger": {
       "main": [
         [
           {
-            "node": "Route Commands",
+            "node": "Input Type",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Export Analysis to XLSX": {
+    "Convert to File": {
       "main": [
         [
           {
-            "node": "Send Analysis Report",
+            "node": "Send a document",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Correct Sentiment with Gemini": {
+    "Sentiment Correction": {
       "main": [
         [
           {
-            "node": "Batch Mismatches for Correction",
+            "node": "Loop Over Items1",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Predict Sentiment Local API": {
+    "NLP Sentiment": {
       "main": [
         [
           {
-            "node": "Read Sentiment Label",
+            "node": "Fetch Sentiment",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Detect Root Cause with Gemini": {
+    "Root Cause Detection": {
       "main": [
         [
           {
-            "node": "Batch Negatives for Root Cause",
+            "node": "Loop Over Items",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Rejoin Root Cause Batches": {
+    "Aggregate": {
       "main": [
         [
           {
-            "node": "Detect Root Cause with Gemini",
+            "node": "Root Cause Detection",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Limit to 250 Rows": {
+    "Limit": {
       "main": [
         [
           {
-            "node": "Send Processing Notice",
+            "node": "Processing FIle",
             "type": "main",
             "index": 0
           },
           {
-            "node": "Detect Columns with Gemini",
+            "node": "Gemini Mapper",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Standardize Columns": {
+    "Code in JavaScript": {
       "main": [
         [
           {
-            "node": "Predict Sentiment Local API",
+            "node": "NLP Sentiment",
             "type": "main",
             "index": 0
           },
           {
-            "node": "Attach Sentiment to Rows",
+            "node": "Merge Sentiment Result",
             "type": "main",
             "index": 1
           }
         ]
       ]
     },
-    "Merge Upload Branches": {
+    "No Operation, do nothing": {
       "main": [
         [
           {
-            "node": "Validate Row Count",
+            "node": "Input Lenght",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Verify Column Mapping": {
+    "If": {
       "main": [
         [
           {
-            "node": "Standardize Columns",
+            "node": "Code in JavaScript",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "Send Missing Columns Error",
+            "node": "Send Error Column Missing",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Detect Columns with Gemini": {
+    "Gemini Mapper": {
       "main": [
         [
           {
-            "node": "Verify Column Mapping",
+            "node": "If",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Route Commands": {
+    "Input Type": {
       "main": [
         [
           {
-            "node": "Send Welcome",
+            "node": "Send Greeting",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "Send Sample Intro",
+            "node": "Send Sample",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "Validate File Extension",
+            "node": "File Type Validation",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Validate File Extension": {
+    "File Type Validation": {
       "main": [
         [
           {
-            "node": "Parse XLSX Upload",
+            "node": "Extract from XLSX",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "Parse CSV Upload",
+            "node": "Extract from CSV",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "Send Unsupported File Error",
+            "node": "Send Error FIletype",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Parse XLSX Upload": {
+    "Extract from XLSX": {
       "main": [
         [
           {
-            "node": "Merge Upload Branches",
+            "node": "No Operation, do nothing",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Parse CSV Upload": {
+    "Extract from CSV": {
       "main": [
         [
           {
-            "node": "Merge Upload Branches",
+            "node": "No Operation, do nothing",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Validate Row Count": {
+    "Input Lenght": {
       "main": [
         [
           {
-            "node": "Limit to 250 Rows",
+            "node": "Limit",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "Send Row Limit Error",
+            "node": "Send Error File Length",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Send Processing Notice": {
+    "Processing FIle": {
       "main": [
         []
       ]
     },
-    "Send Sample Intro": {
+    "Send Sample": {
       "main": [
         [
           {
-            "node": "Send Sample Dataset",
+            "node": "Send Sample Doc",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Send Sample Dataset": {
+    "Send Sample Doc": {
       "main": [
         [
           {
-            "node": "Send Sample Report",
+            "node": "Send Sample Doc 2",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Read Sentiment Label": {
+    "Fetch Sentiment": {
       "main": [
         [
           {
-            "node": "Attach Sentiment to Rows",
+            "node": "Merge Sentiment Result",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Attach Sentiment to Rows": {
+    "Merge Sentiment Result": {
       "main": [
         [
           {
-            "node": "Deduplicate Reviews",
+            "node": "Remove Duplicates",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Flag Star Sentiment Mismatch": {
+    "Sentiment Result Classification": {
       "main": [
         [
           {
-            "node": "Batch Mismatches for Correction",
+            "node": "Loop Over Items1",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "Batch Mismatches for Correction",
+            "node": "Loop Over Items1",
             "type": "main",
             "index": 0
           }
@@ -1410,51 +1410,51 @@
         [],
         [
           {
-            "node": "Merge Negative Streams",
+            "node": "Merge Fixed Sentiment",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Parse Correction Output": {
+    "Parse Result": {
       "main": [
         [
           {
-            "node": "Split Corrected Sentiments",
+            "node": "Split Out",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Keep Corrected Negatives": {
+    "Select Negative Sentiment": {
       "main": [
         [
           {
-            "node": "Merge Negative Streams",
+            "node": "Merge Fixed Sentiment",
             "type": "main",
             "index": 1
           }
         ]
       ]
     },
-    "Merge Negative Streams": {
+    "Merge Fixed Sentiment": {
       "main": [
         [
           {
-            "node": "Batch Negatives for Root Cause",
+            "node": "Loop Over Items",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Parse Root Cause Output": {
+    "Parse Review Result": {
       "main": [
         [
           {
-            "node": "Split Root Cause Results",
+            "node": "Split Out1",
             "type": "main",
             "index": 0
           }
@@ -1462,17 +1462,45 @@
       ]
     }
   },
-  "active": true,
   "settings": {
     "executionOrder": "v1",
     "binaryMode": "separate",
     "availableInMCP": true
   },
-  "versionId": "57667e42-f373-4c6e-ad16-90b19585cb61",
+  "staticData": null,
   "meta": {
     "templateCredsSetupCompleted": true
   },
   "nodeGroups": [],
-  "id": "XdxwHI2LPmnMyAGh",
-  "tags": []
+  "pinData": {},
+  "versionId": "57667e42-f373-4c6e-ad16-90b19585cb61",
+  "activeVersionId": "57667e42-f373-4c6e-ad16-90b19585cb61",
+  "versionCounter": 361,
+  "triggerCount": 1,
+  "sourceWorkflowId": null,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-08-26T13:52:38.503Z",
+      "createdAt": "2026-08-26T13:52:38.503Z",
+      "role": "workflow:owner",
+      "workflowId": "XdxwHI2LPmnMyAGh",
+      "projectId": "fKJUnRuo1Zc3o9l8",
+      "project": {
+        "updatedAt": "2026-08-26T13:51:57.953Z",
+        "createdAt": "2026-08-26T13:48:42.965Z",
+        "id": "fKJUnRuo1Zc3o9l8",
+        "name": "rayya admin@gmail.com <admin@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "customTelemetryTags": [],
+        "creatorId": "5a865949-083a-494e-b4c2-e6a8ed1b72f6"
+      }
+    }
+  ],
+  "versionMetadata": {
+    "name": "Version 57667e42",
+    "description": ""
+  }
 }

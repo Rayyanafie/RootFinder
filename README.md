@@ -1,26 +1,69 @@
 # RootFinder
 
-**AI-powered customer review analysis bot for Telegram.** Upload a `.csv` or `.xlsx` of customer reviews, and RootFinder turns them into a tagged, localized action report.
+**Messy customer reviews in → actionable business insights out.**
 
-A **personal portfolio project** built with [n8n](https://n8n.io).
+RootFinder is an AI-powered Telegram bot that turns raw, unstructured customer feedback (Google Maps reviews, surveys, CSVs) into a clean, **localized action report**: each negative review gets root-cause tags and a concrete fix recommendation, written in the reviewer's own language.
+
+A personal portfolio project built with [n8n](https://n8n.io), a self-hosted NLP service, and the Gemini API.
+
+---
 
 ## Try it live
 
-Message [**@raytestmodel3bot**](https://t.me/raytestmodel3bot) on Telegram and upload a `.csv` or `.xlsx` of customer reviews — it will reply with the analysis report.
+Message [**@raytestmodel3bot**](https://t.me/raytestmodel3bot) on Telegram and upload a `.csv` or `.xlsx` of customer reviews — it replies with `Analysis_Result.xlsx`.
 
 > Demo instance of a personal project: it may be offline sometimes, has a 250-row upload limit, and AI output can be wrong. See the [Disclaimer](#disclaimer).
 
+---
+
 ## What it does
 
-1. **Receives** a review file (`.csv` / `.xlsx`, max **250 rows**) via Telegram
-2. **Auto-detects** your columns — which one is the review text, the star rating, and the ID — using Gemini
-3. **Predicts sentiment** per review through a local NLP service
-4. **Flags mismatches** between star rating and detected sentiment (sarcasm, misclicks, "5 stars but furious")
-5. **Corrects** ambiguous sentiments with Gemini
-6. **Extracts root causes** for negative reviews — tags (Pricing, Service Speed, Food Quality, …) + a fix recommendation, written in the review's own language
-7. **Returns** `Analysis_Result.xlsx` with everything
+1. **Receives** a review file (`.csv` / `.xlsx`, max 250 rows) via Telegram
+2. **Auto-detects** your columns — review text, star rating, and ID — using Gemini
+3. **Scores sentiment** per review (Positive / Negative / Neutral) through a local multilingual NLP service
+4. **Flags mismatches** between the star rating and the detected text sentiment (sarcasm, misclicks, "5 stars but furious")
+5. **Corrects** ambiguous sentiment with Gemini
+6. **Extracts root causes** for negative reviews — up to 3 tags + a summarized problem + a fix recommendation, all in the review's own language
+7. **Returns** `Analysis_Result.xlsx` with everything, ready for your team
 
 **Commands:** `/start` (welcome) · `/sample` (demo files)
+
+---
+
+## The core idea: two brains, two jobs
+
+| | **Local NLP service** | **Gemini API** |
+|---|---|---|
+| Role | Fast, cheap sentiment scorer | Reasoner & language localizer |
+| Does | Labels each review Positive/Negative/Neutral (Indonesian + English) | Detects columns, corrects sarcasm/misclicks, extracts root causes |
+| Why | Runs every row without cloud cost | Only runs on rows that need judgment |
+| Where | Self-hosted, Docker, FastAPI + DistilBERT | Cloud |
+
+The sentiment classifier is deliberately local — it scores all 250 rows in seconds for free. Gemini only gets involved where judgment matters: mapping your columns, fixing star/text contradictions, and writing the root-cause analysis.
+
+---
+
+## Before → After (real data, no cherry-picking)
+
+Here's what the bot does with a real 1-star review from the sample dataset:
+
+| **Input** (raw review, 1★) | **Output** (`Analysis_Result.xlsx`) |
+|---|---|
+| *"Pelayanan Plongan Plongo, kertas pesanan kecil kita order banyak jadi kita tulis di baliknya jadi admin tidak tau, akhirnya 2 menu kita tunggu lama."* | **Tags:** `Kecepatan Pelayanan` · `Sikap Staf`<br>**Root problem:** "Pelayanan staf sangat lambat dan tidak teliti dalam mencatat pesanan, mengakibatkan makanan datang sangat lama."<br>**Recommendation:** "Berikan pelatihan ulang kepada staf terkait pencatatan pesanan dan tingkatkan efisiensi pelayanan." |
+
+And a few more genuine rows from the same run:
+
+| Input (raw) | Tags | Root problem (localized) |
+|---|---|---|
+| *"kalo ngerokok di dlm ruangan bisa ga asepnya ditelen aja¿ (yg punya asma mending take away aja)"* | `Suasana` · `Kebijakan` | Pengunjung merokok di dalam ruangan sehingga mengganggu kenyamanan dan kesehatan tamu lain. |
+| *"Harga hot sama ice beda. Tapi d tulis ice pdhl lbh mahal ice."* | `Harga` | Informasi harga dan keterangan menu minuman panas serta dingin tidak sesuai. |
+| *"Ini tempat udah tutup, tapi di mapnya masih aja statusnya buka."* | `Fasilitas` | Kafe sudah tutup tetapi status di peta daring masih tertulis buka. |
+
+The entire file is processed in one language — the bot detects whether the batch is Indonesian or English, and writes every tag, problem, and recommendation consistently in that language. No mixed-language output.
+
+> Screenshots of the Telegram chat flow and the finished report coming soon.
+
+---
 
 ## Architecture
 
@@ -34,10 +77,25 @@ flowchart LR
     W -- "Analysis_Result.xlsx" --> B
 ```
 
-Two brains, two jobs:
+---
 
-- **Gemini** (cloud) — the *reasoner*: column mapping, sarcasm/misclick correction, root-cause tagging
-- **NLP sentiment service** (self-hosted, included in this repo) — the *fast local scorer*: multilingual `Positive / Negative / Neutral` per review via a distilled DistilBERT fine-tune covering **Indonesian + English** (labels normalized to title case to match the n8n logic)
+## How the pipeline decides (the interesting part)
+
+```
+Upload → column detection (Gemini)
+       → sentiment score per row (local NLP)
+       → Flag Star Sentiment Mismatch
+            ├─ False Positive  (≤2★ but text isn't negative)  → Gemini corrects
+            ├─ False Negative  (≥4★ but text isn't positive)  → Gemini corrects
+            ├─ True Positive   (genuinely happy)              → skipped (no report row)
+            └─ True Negative   (genuine complaint)            → root-cause analysis
+       → root-cause extraction (Gemini, localized)
+       → Analysis_Result.xlsx
+```
+
+The star thresholds are designed to be **disjoint** — every review falls into exactly one branch, and "Neutral" text sentiment is handled explicitly (it used to fall through silently). Rows that are genuinely positive exit the pipeline without spending a single Gemini token.
+
+---
 
 ## Repository layout
 
