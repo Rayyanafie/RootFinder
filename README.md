@@ -75,7 +75,13 @@ The local NLP model is fast, but wording fools it. That's why the star/sentiment
 
 The detector never assumes the star rating is right — it just refuses to let contradictory rows pollute the report silently. Rows Gemini settles as Neutral exit without a root-cause row: no action item for a non-complaint.
 
-> Screenshots of the Telegram chat flow and the finished report coming soon.
+### See it in action
+
+Send a review file to [**@raytestmodel3bot**](https://t.me/raytestmodel3bot) and it comes back as `Analysis_Result.xlsx` — here's the flow and the deliverable:
+
+![RootFinder chat flow — upload a CSV of reviews, get the analysis report back](assets/chat-flow.png)
+
+![Analysis_Result.xlsx — tagged root causes and recommendations, localized to the review language](assets/report-screenshot.png)
 
 ---
 
@@ -118,6 +124,9 @@ rootfinder/
 ├── README.md
 ├── LICENSE
 ├── .gitignore
+├── assets/
+│   ├── chat-flow.png             ← screenshots (see "See it in action")
+│   └── report-screenshot.png
 ├── workflows/
 │   └── RootFinder.json          ← the n8n workflow (import this)
 └── nlp-sentiment-service/       ← companion FastAPI container (self-hosted)
